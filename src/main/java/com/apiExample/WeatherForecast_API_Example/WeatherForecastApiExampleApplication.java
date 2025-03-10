@@ -132,7 +132,7 @@ public class WeatherForecastApiExampleApplication implements CommandLineRunner {
 				System.out.println("Relative Humidity: " + relativeHumidity);
 
 				double windSpeed = (double) currentWeatherJson.get("wind_speed_10m");
-				System.out.println("Current Wind Speed: " + windSpeed);
+				System.out.println("Current Wind Speed (km/h): " + windSpeed);
 
 			} catch (Exception e) {
 				e.printStackTrace();

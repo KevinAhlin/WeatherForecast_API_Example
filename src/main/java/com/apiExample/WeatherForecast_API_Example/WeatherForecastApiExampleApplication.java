@@ -32,10 +32,15 @@ public class WeatherForecastApiExampleApplication implements CommandLineRunner {
 				city = scanner.nextLine();
 
 				// Check if answer is 'No'
-				if (!city.equalsIgnoreCase("No"));
+				if (city.equalsIgnoreCase("No")) break;
 
 				// Get location data
 				JSONObject cityLocationData = (JSONObject) getLocationData(city);
+				if (cityLocationData == null) {
+					System.out.println("Error: Could not retrieve location data for " + city);
+					continue;
+				}
+
 				double latitude = (double) cityLocationData.get("latitude");
 				double longitude = (double) cityLocationData.get("longitude");
 
@@ -76,8 +81,13 @@ public class WeatherForecastApiExampleApplication implements CommandLineRunner {
 				JSONParser parser = new JSONParser();
 				JSONObject resultJsonObj = (JSONObject) parser.parse(jsonResponse);
 
-				// 4. Retrieve Location Data
+				// 4. Retrieve Location Data and check for data status
 				JSONArray locationData = (JSONArray) resultJsonObj.get("results");
+				if (locationData.isEmpty() || locationData == null) {
+					System.out.println("Error: No location data found for " + city);
+					return null;
+				}
+
 				return (JSONObject) locationData.get(0);
 
 			} catch (Exception e) {
@@ -118,10 +128,10 @@ public class WeatherForecastApiExampleApplication implements CommandLineRunner {
 				double temperature = (double) currentWeatherJson.get("temperature_2m");
 				System.out.println("Current Temperature (C): " + temperature);
 
-				double relativeHumidity = (double) currentWeatherJson.get("relative_humidity_2m");
+				long relativeHumidity = (long) currentWeatherJson.get("relative_humidity_2m");
 				System.out.println("Relative Humidity: " + relativeHumidity);
 
-				double windSpeed = (double) currentWeatherJson.get("wind_speed_2m");
+				double windSpeed = (double) currentWeatherJson.get("wind_speed_10m");
 				System.out.println("Current Wind Speed: " + windSpeed);
 
 			} catch (Exception e) {
@@ -157,6 +167,7 @@ public class WeatherForecastApiExampleApplication implements CommandLineRunner {
 			return null;
 		}
 
+		// This method will be in charge of making the API call
 		private static HttpURLConnection fetchApiResponse(String urlString) {
 			try {
 				// attempt to create a connection

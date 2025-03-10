@@ -59,20 +59,25 @@ public class WeatherForecastApiExampleApplication implements CommandLineRunner {
 
 				// check for response status
 				// 200 - means that the connection was a success
-				if (apiConnection.getResponseCode() != 200) {
+				if (apiConnection.getResponseCode() != 200 || apiConnection == null) {
 					System.out.println("Error: Could not connect to API");
 					return null;
 				}
 
 				// 2. Read the response and convert store String type
+				// Like above, check for response status
 				String jsonResponse = readApiResponse(apiConnection);
+				if (jsonResponse.isEmpty() || jsonResponse == null) {
+					System.out.println("Error: Empty response from API");
+					return null;
+				}
 
 				// 3. Parse the string into a JSON object
 				JSONParser parser = new JSONParser();
 				JSONObject resultJsonObj = (JSONObject) parser.parse(jsonResponse);
 
 				// 4. Retrieve Location Data
-				JSONArray locationData = (JSONArray) resultJsonObj.get("result");
+				JSONArray locationData = (JSONArray) resultJsonObj.get("results");
 				return (JSONObject) locationData.get(0);
 
 			} catch (Exception e) {
